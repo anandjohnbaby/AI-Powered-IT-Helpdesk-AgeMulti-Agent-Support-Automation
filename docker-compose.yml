@@ -1,0 +1,41 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: hd-keycloak
+    command: start-dev --import-realm
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak:/opt/keycloak/data/import
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: hd-mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+  web-server:
+    image: nginx:alpine
+    container_name: web-server
+    ports:
+      - "8081:80"
+    labels:
+      helpdesk.managed: "true"
+
+  cache-server:
+    image: redis:alpine
+    container_name: cache-server
+    labels:
+      helpdesk.managed: "true"
+
+  db-server:
+    image: postgres:16-alpine
+    container_name: db-server
+    environment:
+      POSTGRES_PASSWORD: demo
+    labels:
+      helpdesk.managed: "true"
